@@ -3,3 +3,4 @@ nodemodules
 .node_modules
 .node_modules
 public/bundle.js
+.idea
