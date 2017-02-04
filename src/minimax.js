@@ -134,7 +134,8 @@ function getLocation(state, x, y) {
 }
 
 function isValid(state, x, y) {
-
+  var below = getLocation(state, x + 1, y);
+  return getLocation(state, x, y) === 0 && (below !== 0 || below === undefined)
 }
 
 function getOpenOnes(state, player) {
@@ -147,7 +148,7 @@ function getOpenOnes(state, player) {
         if (isValid(state, x, y - 1) && getLocation(state, x, y + 1) !== player) {
           count++;
         }
-        if (getLocation(state, x, y + 1) !== player && getLocation(state, x, y - 1) === 0) {
+        if (getLocation(state, x, y + 1) !== player && isValid(state, x, y - 1)) {
           count++;
         }
 
@@ -155,7 +156,7 @@ function getOpenOnes(state, player) {
         if (isValid(state, x + 1, y) && getLocation(state, x - 1, y) !== player) {
           count++;
         }
-        if (getLocation(state, x + 1, y) !== player && getLocation(state, x - 1, y) === 0) {
+        if (getLocation(state, x + 1, y) !== player && isValid(state, x - 1, y)) {
           count++;
         }
 
@@ -163,13 +164,13 @@ function getOpenOnes(state, player) {
         if (isValid(state, x + 1, y + 1) && getLocation(state, x - 1, y - 1) !== player) {
           count++;
         }
-        if (getLocation(state, x + 1, y + 1) !== player && getLocation(state, x - 1, y - 1) === 0) {
+        if (getLocation(state, x + 1, y + 1) !== player && isValid(state, x - 1, y - 1)) {
           count++;
         }
-        if (getLocation(state, x + 1, y - 1) === 0 && getLocation(state, x - 1, y + 1) !== player) {
+        if (isValid(state, x + 1, y - 1) && getLocation(state, x - 1, y + 1) !== player) {
           count++;
         }
-        if (getLocation(state, x + 1, y - 1) !== player && getLocation(state, x - 1, y + 1) === 0) {
+        if (getLocation(state, x + 1, y - 1) !== player && isValid(state, x - 1, y + 1)) {
           count++;
         }
       }
@@ -187,7 +188,7 @@ function getOpenTwos(state, player) {
       if (getLocation(state, x, y) === player) {
         // Left + right
         if (
-          getLocation(state, x, y - 1) === 0 &&
+          isValid(state, x, y - 1) &&
           getLocation(state, x, y + 1) === player &&
           getLocation(state, x, y + 2) !== player
         ) {
@@ -196,14 +197,14 @@ function getOpenTwos(state, player) {
         if (
           getLocation(state, x, y - 1) !== player &&
           getLocation(state, x, y + 1) === player &&
-          getLocation(state, x, y + 2) === 0
+          isValid(state, x, y + 2)
         ) {
           count++;
         }
 
         // Up + Down
         if (
-          getLocation(state, x + 2, y) === 0 &&
+          isValid(state, x + 2, y) &&
           getLocation(state, x + 1, y) === player &&
           getLocation(state, x - 1, y) !== player
         ) {
@@ -212,14 +213,14 @@ function getOpenTwos(state, player) {
         if (
           getLocation(state, x + 2, y) !== player &&
           getLocation(state, x + 1, y) === player &&
-          getLocation(state, x - 1, y) === 0
+          isValid(state, x - 1, y)
         ) {
           count++;
         }
 
         // Diagonal
         if (
-          getLocation(state, x + 2, y + 2) === 0 &&
+          isValid(state, x + 2, y + 2) &&
           getLocation(state, x + 1, y + 1) === player &&
           getLocation(state, x - 1, y - 1) !== player
         ) {
@@ -228,12 +229,12 @@ function getOpenTwos(state, player) {
         if (
           getLocation(state, x + 2, y + 2) !== player &&
           getLocation(state, x + 1, y + 1) === player &&
-          getLocation(state, x - 1, y - 1) === 0
+          isValid(state, x - 1, y - 1)
         ) {
           count++;
         }
         if (
-          getLocation(state, x + 2, y - 2) === 0 &&
+          isValid(state, x + 2, y - 2) &&
           getLocation(state, x + 1, y - 1) === player &&
           getLocation(state, x - 1, y + 1) !== player
         ) {
@@ -242,7 +243,7 @@ function getOpenTwos(state, player) {
         if (
           getLocation(state, x + 2, y - 2) !== player &&
           getLocation(state, x + 1, y - 1) === player &&
-          getLocation(state, x - 1, y + 1) === 0
+          isValid(state, x - 1, y + 1)
         ) {
           count++;
         }
@@ -261,7 +262,7 @@ function getOpenThrees(state, player) {
       if (getLocation(state, x, y) === player) {
         // Left + right
         if (
-          getLocation(state, x, y - 1) === 0 &&
+          isValid(state, x, y - 1) &&
           getLocation(state, x, y + 1) === player &&
           getLocation(state, x, y + 2) === player &&
           getLocation(state, x, y + 3) !== player
@@ -272,14 +273,14 @@ function getOpenThrees(state, player) {
           getLocation(state, x, y - 1) !== player &&
           getLocation(state, x, y + 1) === player &&
           getLocation(state, x, y + 2) === player &&
-          getLocation(state, x, y + 3) === 0
+          isValid(state, x, y + 3)
         ) {
           count++;
         }
 
         // Up + Down
         if (
-          getLocation(state, x + 3, y) === 0 &&
+          isValid(state, x + 3, y) &&
           getLocation(state, x + 2, y) === player &&
           getLocation(state, x + 1, y) === player &&
           getLocation(state, x - 1, y) !== player
@@ -290,14 +291,14 @@ function getOpenThrees(state, player) {
           getLocation(state, x + 3, y) !== player &&
           getLocation(state, x + 2, y) === player &&
           getLocation(state, x + 1, y) === player &&
-          getLocation(state, x - 1, y) === 0
+          isValid(state, x - 1, y)
         ) {
           count++;
         }
 
         // Diagonal
         if (
-          getLocation(state, x + 3, y + 3) === 0 &&
+          isValid(state, x + 3, y + 3) &&
           getLocation(state, x + 2, y + 2) === player &&
           getLocation(state, x + 1, y + 1) === player &&
           getLocation(state, x - 1, y - 1) !== player
@@ -308,12 +309,12 @@ function getOpenThrees(state, player) {
           getLocation(state, x + 3, y + 3) !== player &&
           getLocation(state, x + 2, y + 2) === player &&
           getLocation(state, x + 1, y + 1) === player &&
-          getLocation(state, x - 1, y - 1) === 0
+          isValid(state, x - 1, y - 1)
         ) {
           count++;
         }
         if (
-          getLocation(state, x + 3, y - 3) === 0 &&
+          isValid(state, x + 3, y - 3) &&
           getLocation(state, x + 2, y - 2) === player &&
           getLocation(state, x + 1, y - 1) === player &&
           getLocation(state, x - 1, y + 1) !== player
@@ -324,7 +325,7 @@ function getOpenThrees(state, player) {
           getLocation(state, x + 3, y - 3) !== player &&
           getLocation(state, x + 2, y - 2) === player &&
           getLocation(state, x + 1, y - 1) === player &&
-          getLocation(state, x - 1, y + 1) === 0
+          isValid(state, x - 1, y + 1)
         ) {
           count++;
         }
