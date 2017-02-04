@@ -133,6 +133,10 @@ function getLocation(state, x, y) {
   return state.board[x] && state.board[x][y];
 }
 
+function isValid(state, x, y) {
+
+}
+
 function getOpenOnes(state, player) {
   let count = 0;
 
@@ -140,7 +144,7 @@ function getOpenOnes(state, player) {
     for (let y = state.board[x].length - 1; y >= 0; y--) {
       if (getLocation(state, x, y) === player) {
         // Left + right
-        if (getLocation(state, x, y - 1) === 0 && getLocation(state, x, y + 1) !== player) {
+        if (isValid(state, x, y - 1) && getLocation(state, x, y + 1) !== player) {
           count++;
         }
         if (getLocation(state, x, y + 1) !== player && getLocation(state, x, y - 1) === 0) {
@@ -148,7 +152,7 @@ function getOpenOnes(state, player) {
         }
 
         // Up + Down
-        if (getLocation(state, x + 1, y) === 0 && getLocation(state, x - 1, y) !== player) {
+        if (isValid(state, x + 1, y) && getLocation(state, x - 1, y) !== player) {
           count++;
         }
         if (getLocation(state, x + 1, y) !== player && getLocation(state, x - 1, y) === 0) {
@@ -156,7 +160,7 @@ function getOpenOnes(state, player) {
         }
 
         // Diagonal
-        if (getLocation(state, x + 1, y + 1) === 0 && getLocation(state, x - 1, y - 1) !== player) {
+        if (isValid(state, x + 1, y + 1) && getLocation(state, x - 1, y - 1) !== player) {
           count++;
         }
         if (getLocation(state, x + 1, y + 1) !== player && getLocation(state, x - 1, y - 1) === 0) {
@@ -441,7 +445,18 @@ var heuristic = function(state, maximizingPlayer){
     minPlayer = xData;
   }
 
-  return (maxPlayer.openOnes + maxPlayer.openTwos * 2 + maxPlayer.openThrees * 3) - (minPlayer.openOnes + minPlayer.openTwos * 2 + minPlayer.openThrees * 3);
+  let results = (maxPlayer.openOnes + maxPlayer.openTwos * 2 + maxPlayer.openThrees * 3) - (minPlayer.openOnes + minPlayer.openTwos * 2 + minPlayer.openThrees * 3);
+  console.log(state.legalMoves());
+  console.log(
+    'x:',
+    xData,
+    'o:',
+    oData,
+    results,
+    state.board.map(row => row.join(' ')).join('\n')
+  );
+
+  return results;
 }
 
 
@@ -469,8 +484,19 @@ var minimax = function(state, depth, maximizingPlayer){
   var minimizingPlayer = (maximizingPlayer == 'x') ? 'o' : 'x';
   var possibleStates = state.nextStates();
   var currentPlayer = state.nextMovePlayer;
-  //Your code here.
-  return Math.random();
+
+  if (depth === 0) {
+    return heuristic(state, maximizingPlayer);
+  } else {
+    let stateVals = possibleStates.map(function(possibleState) {
+      return minimax(possibleState, depth - 1, maximizingPlayer);
+    });
+    if (currentPlayer === maximizingPlayer) {
+      return Math.max(stateVals);
+    } else {
+      return Math.min(stateVals);
+    }
+  }
 }
 
 
